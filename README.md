@@ -1,2 +1,5 @@
-# Beginners-Guide-to-SDL3-in-C
-An in-depth guide to getting started with SDL3 in the C Language .
+# An in-depth guide to getting started with SDL2 in the C Language.
+
+https://www.youtube.com/playlist?list=PLO02jwa2ZaiCgilk8EEVnfnGWA0LNu4As
+
+![Screenshot](screenshot.png)
