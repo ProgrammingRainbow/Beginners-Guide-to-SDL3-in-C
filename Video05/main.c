@@ -14,6 +14,8 @@
 #define WINDOW_HEIGHT 600
 
 #define TEXT_SIZE 80
+#define TEXT_COLOR (SDL_Color){255, 255, 255, 255}
+#define TEXT_STR "SDL"
 
 struct Game {
         SDL_Window *window;
@@ -22,7 +24,6 @@ struct Game {
         SDL_Event event;
         SDL_Texture *background;
         TTF_Font *text_font;
-        SDL_Color text_color;
         SDL_FRect text_rect;
         SDL_Texture *text_image;
 };
@@ -76,7 +77,7 @@ bool game_load_media(struct Game *g) {
     }
 
     SDL_Surface *surface =
-        TTF_RenderText_Blended(g->text_font, "SDL", 0, g->text_color);
+        TTF_RenderText_Blended(g->text_font, TEXT_STR, 0, TEXT_COLOR);
     if (!surface) {
         fprintf(stderr, "Error creating Surface: %s\n", SDL_GetError());
         return false;
@@ -94,7 +95,6 @@ bool game_load_media(struct Game *g) {
 }
 
 bool game_new(struct Game *g) {
-    g->text_color = (SDL_Color){255, 255, 255, 255};
     g->is_running = true;
 
     if (!game_init_sdl(g)) {

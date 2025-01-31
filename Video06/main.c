@@ -14,6 +14,9 @@
 #define WINDOW_HEIGHT 600
 
 #define TEXT_SIZE 80
+#define TEXT_COLOR (SDL_Color){255, 255, 255, 255}
+#define TEXT_STR "SDL"
+#define TEXT_VEL 3
 
 struct Game {
         SDL_Window *window;
@@ -22,7 +25,6 @@ struct Game {
         SDL_Event event;
         SDL_Texture *background;
         TTF_Font *text_font;
-        SDL_Color text_color;
         SDL_FRect text_rect;
         SDL_Texture *text_image;
         float text_xvel;
@@ -88,7 +90,7 @@ bool game_load_media(struct Game *g) {
     }
 
     SDL_Surface *surface =
-        TTF_RenderText_Blended(g->text_font, "SDL", 0, g->text_color);
+        TTF_RenderText_Blended(g->text_font, TEXT_STR, 0, TEXT_COLOR);
     if (!surface) {
         fprintf(stderr, "Error creating Surface: %s\n", SDL_GetError());
         return false;
@@ -106,10 +108,8 @@ bool game_load_media(struct Game *g) {
 }
 
 bool game_new(struct Game *g) {
-    g->text_color = (SDL_Color){255, 255, 255, 255};
-    g->text_rect = (SDL_FRect){100, 0, 0, 0};
-    g->text_xvel = 3;
-    g->text_yvel = 3;
+    g->text_xvel = TEXT_VEL;
+    g->text_yvel = TEXT_VEL;
     g->is_running = true;
 
     if (!game_init_sdl(g)) {
@@ -161,16 +161,16 @@ void game_text_update(struct Game *g) {
     g->text_rect.x += g->text_xvel;
     g->text_rect.y += g->text_yvel;
     if (g->text_rect.x + g->text_rect.w > WINDOW_WIDTH) {
-        g->text_xvel = -3;
+        g->text_xvel = -TEXT_VEL;
     }
     if (g->text_rect.x < 0) {
-        g->text_xvel = 3;
+        g->text_xvel = TEXT_VEL;
     }
     if (g->text_rect.y + g->text_rect.h > WINDOW_HEIGHT) {
-        g->text_yvel = -3;
+        g->text_yvel = -TEXT_VEL;
     }
     if (g->text_rect.y < 0) {
-        g->text_yvel = 3;
+        g->text_yvel = TEXT_VEL;
     }
 }
 
