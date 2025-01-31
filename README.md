@@ -1,6 +1,6 @@
 ![Screenshot](screenshot.png)
 
-# An in-depth guide to getting started with SDL2 in the C Language.
+# An in-depth guide to getting started with SDL3 in the C Language.
 
 # ArchLinux instructions.
 You will need to make sure SDL3, SDL3_image, SDL3_ttf and SDL3_mixer is installed.
