@@ -31,7 +31,7 @@ git clone https://github.com/ProgrammingRainbow/Beginners-Guide-to-SDL3-in-C
 cd Beginners-Guide-to-SDL3-in-C
 make run
 ```
-The Makefile builds debug by default. It also supports these commands:
+The Makefile supports these commands:
 ```
 make rebuild
 make clean
