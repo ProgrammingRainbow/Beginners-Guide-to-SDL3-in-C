@@ -17,22 +17,23 @@ struct Game {
 
 bool game_init_sdl(struct Game *g);
 void game_free(struct Game *g);
+void game_run(struct Game *g);
 
 bool game_init_sdl(struct Game *g) {
     if (!SDL_Init(SDL_FLAGS)) {
-        fprintf(stderr, "Error initializing SDL: %s\n", SDL_GetError());
+        fprintf(stderr, "Error initializing SDL3: %s\n", SDL_GetError());
         return false;
     }
 
     g->window = SDL_CreateWindow(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
     if (!g->window) {
-        fprintf(stderr, "Error creating window: %s\n", SDL_GetError());
+        fprintf(stderr, "Error creating Window: %s\n", SDL_GetError());
         return false;
     }
 
     g->renderer = SDL_CreateRenderer(g->window, NULL);
     if (!g->renderer) {
-        fprintf(stderr, "Error creating renderer: %s\n", SDL_GetError());
+        fprintf(stderr, "Error creating Renderer: %s\n", SDL_GetError());
         return false;
     }
 
@@ -51,8 +52,6 @@ void game_free(struct Game *g) {
     }
 
     SDL_Quit();
-
-    printf("all clean!\n");
 }
 
 void game_run(struct Game *g) {
@@ -71,7 +70,6 @@ int main(void) {
     struct Game game = {0};
 
     if (game_init_sdl(&game)) {
-
         game_run(&game);
 
         exit_status = EXIT_SUCCESS;

@@ -37,7 +37,7 @@ else
 					   -ftrapv
 	LDLIBS_DEBUG	+= -fsanitize=address -fsanitize-address-use-after-scope
 	PKG_CONFIG	:= $(shell command -v pkg-config >/dev/null 2>&1 && echo "yes" || echo "no")
-	CLEAN		= $(RM) -f $(TARGET) && $(RM) -rf $(BUILD_DIR)
+	CLEAN		= $(RM) $(TARGET) && $(RM) -r $(BUILD_DIR)
 	MKDIR		= mkdir -p $(BUILD_DIR)
 endif
 
@@ -58,7 +58,7 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -MMD -MP -c $< -o $@
 
 $(TARGET): $(OBJS)
-	$(CC) $^ -o $@ $(LDLIBS)
+	$(CC) $(LDLIBS) $^ -o $@
 
 -include $(DEPS)
 
