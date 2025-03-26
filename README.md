@@ -10,19 +10,19 @@ sudo pacman -S --needed base-devel sdl3
 ```
 cd
 git clone https://aur.archlinux.org/sdl3_image-git.git
-sdl3_image-git
+cd sdl3_image-git
 makepkg -i
 ```
 ```
 cd
 git clone https://aur.archlinux.org/sdl3_ttf-git.git
-sdl3_ttf-git
+cd sdl3_ttf-git
 makepkg -i
 ```
 ```
 cd
 git clone https://aur.archlinux.org/sdl3_mixer-git.git
-sdl3_mixer-git
+cd sdl3_mixer-git
 makepkg -i
 ```
 ```
