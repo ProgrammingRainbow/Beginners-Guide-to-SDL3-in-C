@@ -106,8 +106,8 @@ SDL_Surface *bubble_surface(SDL_Surface *surface, int radius,
     //     int x = (int)(cos(rad) * radius) + radius;
     //     int y = (int)(sin(rad) * radius) + radius;
     //
-    //     SDL_BlitSurface(text_surf, NULL, *target_surf,
-    //                     &(SDL_Rect){x, y, text_surf->w, text_surf->h});
+    //     SDL_BlitSurface(outer_surf, NULL, target_surf,
+    //                     &(SDL_Rect){x, y, outer_surf->w, outer_surf->h});
     // }
 
     // Bresenham's Circle Drawing Algorithm
