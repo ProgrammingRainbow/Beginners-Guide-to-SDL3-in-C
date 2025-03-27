@@ -11,16 +11,18 @@ bool text_new(struct Text **text, SDL_Renderer *renderer) {
 
     t->renderer = renderer;
 
-    t->surface = bubble_create_text(TEXT_STR, TEXT_SIZE, BUBBLE_RADIUS,
-                                    BLUE_COLOR, WHITE_COLOR);
-    if (!t->surface) {
+    SDL_Surface *surf = bubble_create_text(TEXT_STR, TEXT_SIZE, BUBBLE_RADIUS,
+                                           WHITE_COLOR, BLUE_COLOR);
+    if (!surf) {
         return false;
     }
 
-    t->rect.w = (float)t->surface->w;
-    t->rect.h = (float)t->surface->h;
+    t->rect.w = (float)surf->w;
+    t->rect.h = (float)surf->h;
 
-    t->image = SDL_CreateTextureFromSurface(t->renderer, t->surface);
+    t->image = SDL_CreateTextureFromSurface(t->renderer, surf);
+    SDL_DestroySurface(surf);
+    surf = NULL;
     if (!t->image) {
         fprintf(stderr, "Error creating Texture from Surface: %s\n",
                 SDL_GetError());
@@ -37,10 +39,6 @@ void text_free(struct Text **text) {
     if (*text) {
         struct Text *t = *text;
 
-        if (t->surface) {
-            SDL_DestroySurface(t->surface);
-            t->surface = NULL;
-        }
         if (t->image) {
             SDL_DestroyTexture(t->image);
             t->image = NULL;
@@ -65,7 +63,6 @@ void text_update(struct Text *t) {
     } else if (t->rect.x < 0) {
         t->x_vel = TEXT_VEL;
     }
-
     if (t->rect.y + t->rect.h > WINDOW_HEIGHT) {
         t->y_vel = -TEXT_VEL;
     } else if (t->rect.y < 0) {
