@@ -1,10 +1,8 @@
 #include "game.h"
 #include "init_sdl.h"
 #include "load_media.h"
-#include <SDL3/SDL_scancode.h>
 
 void game_render_color(struct Game *g);
-void game_toggle_mute(void);
 void game_events(struct Game *g);
 void game_update(struct Game *g);
 void game_draw(const struct Game *g);
@@ -25,7 +23,7 @@ bool game_new(struct Game **game) {
         return false;
     }
 
-    if (!text_new(&g->text, g->renderer, g->sdl_sound)) {
+    if (!text_new(&g->text, g->renderer)) {
         return false;
     }
     if (!player_new(&g->player, g->renderer)) {
@@ -42,21 +40,6 @@ bool game_new(struct Game **game) {
 void game_free(struct Game **game) {
     if (*game) {
         struct Game *g = *game;
-        Mix_HaltMusic();
-        Mix_HaltChannel(-1);
-
-        if (g->music) {
-            Mix_FreeMusic(g->music);
-            g->music = NULL;
-        }
-        if (g->sdl_sound) {
-            Mix_FreeChunk(g->sdl_sound);
-            g->sdl_sound = NULL;
-        }
-        if (g->c_sound) {
-            Mix_FreeChunk(g->c_sound);
-            g->c_sound = NULL;
-        }
 
         if (g->player) {
             player_free(&g->player);
@@ -79,7 +62,6 @@ void game_free(struct Game **game) {
             g->window = NULL;
         }
 
-        Mix_Quit();
         TTF_Quit();
         SDL_Quit();
 
@@ -95,15 +77,6 @@ void game_free(struct Game **game) {
 void game_render_color(struct Game *g) {
     SDL_SetRenderDrawColor(g->renderer, (Uint8)rand(), (Uint8)rand(),
                            (Uint8)rand(), 255);
-    Mix_PlayChannel(-1, g->c_sound, 0);
-}
-
-void game_toggle_mute(void) {
-    if (Mix_PausedMusic()) {
-        Mix_ResumeMusic();
-    } else {
-        Mix_PauseMusic();
-    }
 }
 
 void game_events(struct Game *g) {
@@ -120,8 +93,6 @@ void game_events(struct Game *g) {
             case SDL_SCANCODE_SPACE:
                 game_render_color(g);
                 break;
-            case SDL_SCANCODE_M:
-                game_toggle_mute();
             default:
                 break;
             }
@@ -147,12 +118,7 @@ void game_draw(const struct Game *g) {
     SDL_RenderPresent(g->renderer);
 }
 
-bool game_run(struct Game *g) {
-    if (!Mix_PlayMusic(g->music, -1)) {
-        fprintf(stderr, "Error Playing Music: %s\n", SDL_GetError());
-        return false;
-    }
-
+void game_run(struct Game *g) {
     while (g->is_running) {
         game_events(g);
 
@@ -162,6 +128,4 @@ bool game_run(struct Game *g) {
 
         SDL_Delay(16);
     }
-
-    return true;
 }

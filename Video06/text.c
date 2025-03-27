@@ -16,15 +16,15 @@ bool text_new(struct Text **text, SDL_Renderer *renderer) {
         return false;
     }
 
-    t->text_surf = TTF_RenderText_Blended(t->font, TEXT_STR, 0, TEXT_COLOR);
+    t->text_surf = TTF_RenderText_Blended(t->font, TEXT_STR, 0, WHITE_COLOR);
     if (!t->text_surf) {
         fprintf(stderr, "Error creating outer text Surface: %s\n",
                 SDL_GetError());
         return false;
     }
 
-    t->rect.w = t->text_surf->w;
-    t->rect.h = t->text_surf->h;
+    t->rect.w = (float)t->text_surf->w;
+    t->rect.h = (float)t->text_surf->h;
 
     t->image = SDL_CreateTextureFromSurface(t->renderer, t->text_surf);
     if (!t->image) {

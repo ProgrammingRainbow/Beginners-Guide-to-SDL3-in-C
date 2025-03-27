@@ -16,8 +16,9 @@
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
+#define WHITE_COLOR (SDL_Color){255, 255, 255, 255}
+
 #define TEXT_SIZE 80
-#define TEXT_COLOR (SDL_Color){255, 255, 255, 255}
 #define TEXT_STR "SDL"
 #define TEXT_VEL 3
 

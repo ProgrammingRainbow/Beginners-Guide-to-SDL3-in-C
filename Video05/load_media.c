@@ -14,7 +14,7 @@ bool game_load_media(struct Game *g) {
     }
 
     SDL_Surface *surf =
-        TTF_RenderText_Blended(g->text_font, TEXT_STR, 0, TEXT_COLOR);
+        TTF_RenderText_Blended(g->text_font, TEXT_STR, 0, WHITE_COLOR);
     if (!surf) {
         fprintf(stderr, "Error rendering text to Surface: %s\n",
                 SDL_GetError());

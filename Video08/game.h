@@ -11,15 +11,12 @@ struct Game {
         SDL_Texture *background;
         struct Text *text;
         struct Player *player;
-        Mix_Chunk *c_sound;
-        Mix_Chunk *sdl_sound;
-        Mix_Music *music;
         SDL_Event event;
         bool is_running;
 };
 
 bool game_new(struct Game **game);
 void game_free(struct Game **game);
-bool game_run(struct Game *g);
+void game_run(struct Game *g);
 
 #endif

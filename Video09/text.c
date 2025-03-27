@@ -1,7 +1,7 @@
 #include "text.h"
 #include "bubble.h"
 
-bool text_new(struct Text **text, SDL_Renderer *renderer) {
+bool text_new(struct Text **text, SDL_Renderer *renderer, Mix_Chunk *sound) {
     *text = calloc(1, sizeof(struct Text));
     if (*text == NULL) {
         fprintf(stderr, "Error Calloc of New Text.\n");
@@ -10,6 +10,7 @@ bool text_new(struct Text **text, SDL_Renderer *renderer) {
     struct Text *t = *text;
 
     t->renderer = renderer;
+    t->sound = sound;
 
     t->surface = bubble_create_text(TEXT_STR, TEXT_SIZE, BUBBLE_RADIUS,
                                     BLUE_COLOR, WHITE_COLOR);
@@ -62,14 +63,18 @@ void text_update(struct Text *t) {
 
     if (t->rect.x + t->rect.w > WINDOW_WIDTH) {
         t->x_vel = -TEXT_VEL;
+        Mix_PlayChannel(-1, t->sound, 0);
     } else if (t->rect.x < 0) {
         t->x_vel = TEXT_VEL;
+        Mix_PlayChannel(-1, t->sound, 0);
     }
 
     if (t->rect.y + t->rect.h > WINDOW_HEIGHT) {
         t->y_vel = -TEXT_VEL;
+        Mix_PlayChannel(-1, t->sound, 0);
     } else if (t->rect.y < 0) {
         t->y_vel = TEXT_VEL;
+        Mix_PlayChannel(-1, t->sound, 0);
     }
 }
 
