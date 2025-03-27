@@ -5,9 +5,8 @@
 
 struct Text {
         SDL_Renderer *renderer;
+        SDL_Surface *surface;
         SDL_Texture *image;
-        TTF_Font *font;
-        SDL_Surface *text_surf;
         SDL_FRect rect;
         float x_vel;
         float y_vel;

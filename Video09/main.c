@@ -2,14 +2,16 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
+#include <SDL3_mixer/SDL_mixer.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-#define SDL_FLAGS SDL_INIT_VIDEO
+#define SDL_FLAGS (SDL_INIT_VIDEO | SDL_INIT_AUDIO)
+#define MIXER_FLAGS MIX_INIT_OGG
 
-#define WINDOW_TITLE "Player Sprite"
+#define WINDOW_TITLE "Sound and Music"
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
@@ -34,6 +36,9 @@ struct Game {
         SDL_Texture *sprite_image;
         SDL_FRect sprite_rect;
         const bool *keystate;
+        Mix_Chunk *c_sound;
+        Mix_Chunk *sdl_sound;
+        Mix_Music *music;
 };
 
 bool game_load_media(struct Game *g);
@@ -43,10 +48,11 @@ void game_free(struct Game *g);
 void game_text_update(struct Game *g);
 void game_sprite_update(struct Game *g);
 void game_render_color(struct Game *g);
+void game_toggle_mute(void);
 void game_events(struct Game *g);
 void game_update(struct Game *g);
 void game_draw(const struct Game *g);
-void game_run(struct Game *g);
+bool game_run(struct Game *g);
 
 bool game_init_sdl(struct Game *g) {
     if (!SDL_Init(SDL_FLAGS)) {
@@ -56,6 +62,22 @@ bool game_init_sdl(struct Game *g) {
 
     if (!TTF_Init()) {
         fprintf(stderr, "Error initializing SDL_ttf: %s\n", SDL_GetError());
+        return false;
+    }
+
+    MIX_InitFlags mix_init = Mix_Init(MIXER_FLAGS);
+    if ((mix_init & MIXER_FLAGS) != MIXER_FLAGS) {
+        fprintf(stderr, "Error initializing SDL_mixer: %s\n", SDL_GetError());
+        return false;
+    }
+
+    SDL_AudioSpec audiospec;
+    audiospec.freq = MIX_DEFAULT_FREQUENCY;
+    audiospec.format = MIX_DEFAULT_FORMAT;
+    audiospec.channels = MIX_DEFAULT_CHANNELS;
+
+    if (!Mix_OpenAudio(0, &audiospec)) {
+        fprintf(stderr, "Error Opening Audio: %s\n", SDL_GetError());
         return false;
     }
 
@@ -122,6 +144,24 @@ bool game_load_media(struct Game *g) {
         return false;
     }
 
+    g->c_sound = Mix_LoadWAV("sounds/C.ogg");
+    if (!g->c_sound) {
+        fprintf(stderr, "Error loading Chunk: %s\n", SDL_GetError());
+        return false;
+    }
+
+    g->sdl_sound = Mix_LoadWAV("sounds/SDL.ogg");
+    if (!g->sdl_sound) {
+        fprintf(stderr, "Error loading Chunk: %s\n", SDL_GetError());
+        return false;
+    }
+
+    g->music = Mix_LoadMUS("music/freesoftwaresong-8bit.ogg");
+    if (!g->music) {
+        fprintf(stderr, "Error loading Music: %s\n", SDL_GetError());
+        return false;
+    }
+
     return true;
 }
 
@@ -145,6 +185,24 @@ bool game_new(struct Game *g) {
 }
 
 void game_free(struct Game *g) {
+    Mix_HaltMusic();
+    Mix_HaltChannel(-1);
+
+    if (g->music) {
+        Mix_FreeMusic(g->music);
+        g->music = NULL;
+    }
+
+    if (g->sdl_sound) {
+        Mix_FreeChunk(g->sdl_sound);
+        g->sdl_sound = NULL;
+    }
+
+    if (g->c_sound) {
+        Mix_FreeChunk(g->c_sound);
+        g->c_sound = NULL;
+    }
+
     if (g->sprite_image) {
         SDL_DestroyTexture(g->sprite_image);
         g->sprite_image = NULL;
@@ -186,15 +244,19 @@ void game_text_update(struct Game *g) {
     g->text_rect.y += g->text_yvel;
     if (g->text_rect.x + g->text_rect.w > WINDOW_WIDTH) {
         g->text_xvel = -TEXT_VEL;
+        Mix_PlayChannel(-1, g->sdl_sound, 0);
     }
     if (g->text_rect.x < 0) {
         g->text_xvel = TEXT_VEL;
+        Mix_PlayChannel(-1, g->sdl_sound, 0);
     }
     if (g->text_rect.y + g->text_rect.h > WINDOW_HEIGHT) {
         g->text_yvel = -TEXT_VEL;
+        Mix_PlayChannel(-1, g->sdl_sound, 0);
     }
     if (g->text_rect.y < 0) {
         g->text_yvel = TEXT_VEL;
+        Mix_PlayChannel(-1, g->sdl_sound, 0);
     }
 }
 
@@ -216,6 +278,15 @@ void game_sprite_update(struct Game *g) {
 void game_render_color(struct Game *g) {
     SDL_SetRenderDrawColor(g->renderer, (Uint8)rand() % 256,
                            (Uint8)rand() % 256, (Uint8)rand() % 256, 255);
+    Mix_PlayChannel(-1, g->c_sound, 0);
+}
+
+void game_toggle_mute(void) {
+    if (Mix_PausedMusic()) {
+        Mix_ResumeMusic();
+    } else {
+        Mix_PauseMusic();
+    }
 }
 
 void game_events(struct Game *g) {
@@ -231,6 +302,9 @@ void game_events(struct Game *g) {
                 break;
             case SDL_SCANCODE_SPACE:
                 game_render_color(g);
+                break;
+            case SDL_SCANCODE_M:
+                game_toggle_mute();
                 break;
             default:
                 break;
@@ -257,7 +331,12 @@ void game_draw(const struct Game *g) {
     SDL_RenderPresent(g->renderer);
 }
 
-void game_run(struct Game *g) {
+bool game_run(struct Game *g) {
+    if (!Mix_PlayMusic(g->music, -1)) {
+        fprintf(stderr, "Error Playing Music: %s\n", SDL_GetError());
+        return false;
+    }
+
     while (g->is_running) {
 
         game_events(g);
@@ -268,6 +347,8 @@ void game_run(struct Game *g) {
 
         SDL_Delay(16);
     }
+
+    return true;
 }
 
 int main(void) {
@@ -276,10 +357,9 @@ int main(void) {
     struct Game game = {0};
 
     if (game_new(&game)) {
-
-        game_run(&game);
-
-        exit_status = EXIT_SUCCESS;
+        if (game_run(&game)) {
+            exit_status = EXIT_SUCCESS;
+        }
     }
 
     game_free(&game);
