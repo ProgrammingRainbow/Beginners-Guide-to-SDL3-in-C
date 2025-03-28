@@ -5,7 +5,6 @@
 
 struct Player {
         SDL_Renderer *renderer;
-        SDL_Surface *surface;
         SDL_Texture *image;
         SDL_FRect rect;
         const bool *keystate;

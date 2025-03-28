@@ -1,7 +1,6 @@
 #include "game.h"
 #include "init_sdl.h"
 #include "load_media.h"
-#include <SDL3/SDL_scancode.h>
 
 void game_render_color(struct Game *g);
 void game_toggle_mute(void);
@@ -122,6 +121,7 @@ void game_events(struct Game *g) {
                 break;
             case SDL_SCANCODE_M:
                 game_toggle_mute();
+                break;
             default:
                 break;
             }

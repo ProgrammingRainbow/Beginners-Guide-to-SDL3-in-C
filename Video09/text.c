@@ -13,7 +13,7 @@ bool text_new(struct Text **text, SDL_Renderer *renderer, Mix_Chunk *sound) {
     t->sound = sound;
 
     t->surface = bubble_create_text(TEXT_STR, TEXT_SIZE, BUBBLE_RADIUS,
-                                    BLUE_COLOR, WHITE_COLOR);
+                                    WHITE_COLOR, BLUE_COLOR);
     if (!t->surface) {
         return false;
     }

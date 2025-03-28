@@ -18,7 +18,6 @@ bool game_new(struct Game **game) {
     if (!game_init_sdl(g)) {
         return false;
     }
-
     if (!game_load_media(g)) {
         return false;
     }
