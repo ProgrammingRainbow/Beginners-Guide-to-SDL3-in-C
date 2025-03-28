@@ -1,10 +1,9 @@
 #include "game.h"
 #include "init_sdl.h"
 #include "load_media.h"
-#include <SDL3/SDL_scancode.h>
 
 void game_render_color(struct Game *g);
-void game_toggle_mute(void);
+void game_toggle_music(void);
 void game_events(struct Game *g);
 void game_update(struct Game *g);
 void game_draw(const struct Game *g);
@@ -20,12 +19,11 @@ bool game_new(struct Game **game) {
     if (!game_init_sdl(g)) {
         return false;
     }
-
     if (!game_load_media(g)) {
         return false;
     }
 
-    if (!text_new(&g->text, g->renderer, g->sdl_sound)) {
+    if (!text_new(&g->text, g->renderer)) {
         return false;
     }
     if (!player_new(&g->player, g->renderer)) {
@@ -42,6 +40,7 @@ bool game_new(struct Game **game) {
 void game_free(struct Game **game) {
     if (*game) {
         struct Game *g = *game;
+
         Mix_HaltMusic();
         Mix_HaltChannel(-1);
 
@@ -79,6 +78,8 @@ void game_free(struct Game **game) {
             g->window = NULL;
         }
 
+        Mix_CloseAudio();
+
         Mix_Quit();
         TTF_Quit();
         SDL_Quit();
@@ -98,7 +99,7 @@ void game_render_color(struct Game *g) {
     Mix_PlayChannel(-1, g->c_sound, 0);
 }
 
-void game_toggle_mute(void) {
+void game_toggle_music(void) {
     if (Mix_PausedMusic()) {
         Mix_ResumeMusic();
     } else {
@@ -121,7 +122,8 @@ void game_events(struct Game *g) {
                 game_render_color(g);
                 break;
             case SDL_SCANCODE_M:
-                game_toggle_mute();
+                game_toggle_music();
+                break;
             default:
                 break;
             }
@@ -133,7 +135,7 @@ void game_events(struct Game *g) {
 }
 
 void game_update(struct Game *g) {
-    text_update(g->text);
+    text_update(g->text, g->sdl_sound);
     player_update(g->player);
 }
 
@@ -149,7 +151,7 @@ void game_draw(const struct Game *g) {
 
 bool game_run(struct Game *g) {
     if (!Mix_PlayMusic(g->music, -1)) {
-        fprintf(stderr, "Error Playing Music: %s\n", SDL_GetError());
+        fprintf(stderr, "Error playing Music: %s\n", SDL_GetError());
         return false;
     }
 

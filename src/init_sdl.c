@@ -11,16 +11,15 @@ bool game_init_sdl(struct Game *g) {
         return false;
     }
 
-    MIX_InitFlags mix_init = Mix_Init(MIXER_FLAGS);
-    if ((mix_init & MIXER_FLAGS) != MIXER_FLAGS) {
-        fprintf(stderr, "Error initializing SDL_mixer: %s\n", SDL_GetError());
+    if ((Mix_Init(MIX_FLAGS) & MIX_FLAGS) != MIX_FLAGS) {
+        fprintf(stderr, "Error initializing SDL3_mixer: %s\n", SDL_GetError());
         return false;
     }
 
-    SDL_AudioSpec audiospec;
-    audiospec.freq = MIX_DEFAULT_FREQUENCY;
+    SDL_AudioSpec audiospec = {0};
     audiospec.format = MIX_DEFAULT_FORMAT;
     audiospec.channels = MIX_DEFAULT_CHANNELS;
+    audiospec.freq = MIX_DEFAULT_FREQUENCY;
 
     if (!Mix_OpenAudio(0, &audiospec)) {
         fprintf(stderr, "Error Opening Audio: %s\n", SDL_GetError());

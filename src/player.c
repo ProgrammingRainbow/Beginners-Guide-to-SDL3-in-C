@@ -11,50 +11,60 @@ bool player_new(struct Player **player, SDL_Renderer *renderer) {
 
     p->renderer = renderer;
 
-    SDL_Surface *surface = IMG_Load("images/C-logo.png");
-    if (!surface) {
-        fprintf(stderr, "Error loading Surface.\n");
+    // p->image = IMG_LoadTexture(p->renderer, "images/C-logo.png");
+    // if (!p->image) {
+    //     fprintf(stderr, "Error loading Texture: %s\n", SDL_GetError());
+    //     return false;
+    // }
+
+    SDL_Surface *surf = IMG_Load("images/C-logo.png");
+    if (!surf) {
+        fprintf(stderr, "Error loading Surface: %s\n", SDL_GetError());
         return false;
     }
 
-    SDL_Surface *bubble_surf =
-        bubble_surface(surface, BUBBLE_RADIUS, WHITE_COLOR);
-    if (!surface) {
-        SDL_DestroySurface(surface);
+    SDL_Surface *bubble_surf = bubble_surface(surf, BUBBLE_RADIUS, WHITE_COLOR);
+    SDL_DestroySurface(surf);
+    surf = NULL;
+    if (!bubble_surf) {
         return false;
     }
-
-    p->rect.w = (float)bubble_surf->w;
-    p->rect.h = (float)bubble_surf->h;
 
     p->image = SDL_CreateTextureFromSurface(p->renderer, bubble_surf);
-    SDL_DestroySurface(surface);
     SDL_DestroySurface(bubble_surf);
+    bubble_surf = NULL;
     if (!p->image) {
         fprintf(stderr, "Error creating Texture from Surface: %s\n",
                 SDL_GetError());
         return false;
     }
 
+    if (!SDL_GetTextureSize(p->image, &p->rect.w, &p->rect.h)) {
+        fprintf(stderr, "Error getting Texture Size: %s\n", SDL_GetError());
+        return false;
+    }
+
     p->keystate = SDL_GetKeyboardState(NULL);
+
+    // if (!SDL_SetTextureScaleMode(p->image, SDL_SCALEMODE_NEAREST)) {
+    //     fprintf(stderr, "Error setting texture scale mode: %s\n",
+    //             SDL_GetError());
+    //     return false;
+    // }
 
     return true;
 }
-
 void player_free(struct Player **player) {
     if (*player) {
         struct Player *p = *player;
 
-        if (p->surface) {
-            SDL_DestroySurface(p->surface);
-            p->surface = NULL;
-        }
         if (p->image) {
             SDL_DestroyTexture(p->image);
             p->image = NULL;
         }
 
         p->renderer = NULL;
+        p->keystate = NULL;
 
         free(p);
         p = NULL;

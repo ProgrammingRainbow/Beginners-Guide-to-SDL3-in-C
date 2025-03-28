@@ -12,10 +12,10 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define SDL_FLAGS (SDL_INIT_VIDEO | SDL_INIT_AUDIO)
-#define MIXER_FLAGS MIX_INIT_OGG
+#define SDL_FLAGS SDL_INIT_VIDEO
+#define MIX_FLAGS MIX_INIT_OGG
 
-#define WINDOW_TITLE "Music and Sound"
+#define WINDOW_TITLE "Bubble Text"
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
